@@ -7,39 +7,18 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="container">
-      <h1 class="title">Wo lohnt sich’s</h1>
+    <section id="hero" class="hero" aria-label="Wasserlandschaft">
+      <h1 class="hero__title">Wo lohnt sich’s</h1>
 
-      <div class="toggle">
-        <button class="toggle__btn is-active" data-mode="shop">z’shoppe</button>
-        <button class="toggle__btn" data-mode="work">z’schaffe</button>
+      <div class="hero__toggle">
+        <button class="pill is-active" data-mode="shop">z’shoppe</button>
+        <button class="pill" data-mode="work">z’schaffe</button>
       </div>
 
-      <div class="rates">
-        <div class="rate">
-          <div class="rate__value" data-currency="DKK">7.9</div>
-          <div class="rate__code">DKK</div>
-        </div>
-
-        <div class="swap">↔</div>
-
-        <div class="rate">
-          <div class="rate__value" data-currency="SEK">11.8</div>
-          <div class="rate__code">SEK</div>
-        </div>
-      </div>
-
-      <div class="select-box">
-        <label for="rangeSelect" class="select__label">Zeitraum</label>
-        <select id="rangeSelect" class="select">
-          <option value="today" selected>Heute</option>
-          <option value="week">Letzte Woche</option>
-          <option value="month">Letzter Monat</option>
-        </select>
-      </div>
-    </main>
+      <!-- Brücke mittig -->
+      <img class="bridge" src="img/bridge.png" alt="Brücke zwischen Inseln" aria-hidden="true" />
+    </section>
 
     <script src="script.js"></script>
-
   </body>
 </html>
