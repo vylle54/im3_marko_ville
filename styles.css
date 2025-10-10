@@ -1,259 +1,322 @@
-/* ===== Variablen ===== */
+/* ===== Stellschrauben ===== */
 :root{
-    --water-1:#bfe9ff;
-    --water-2:#74c1ff;
-    --water-3:#3da0ff;
-  
-    /* Feintuning */
-    --bridge-shift: -42%;  /* -50% = exakt Mitte; weniger negativ = weiter nach rechts */
-    --island-scale: 1.28;  /* globale Größen-Skalierung für beide Inseln */
-  }
-  
-  *{ box-sizing:border-box; font-family: "Inter", system-ui, sans-serif; }
-  
-  html, body{ min-height:100%; margin:0; }
-  body{
-    color:#0a223a;
-    background:
-      radial-gradient(1200px 800px at 50% -10%, rgba(255,255,255,.20), transparent 60%),
-      linear-gradient(180deg, var(--water-1) 0%, var(--water-2) 45%, var(--water-3) 100%);
-    background-attachment: fixed;
-    overflow-x: hidden; /* Seitenüberstand der Inseln ohne Scrollbalken */
-  }
-  
-  /* ===== HERO ===== */
-  .hero{
-    position: relative;
-    min-height: clamp(680px, 78vh, 1200px);
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    justify-items: center;
-    padding-top: clamp(28px, 6vh, 72px);
-    /* WICHTIG: nicht ausblenden → Inseln dürfen nach oben/unten überstehen */
-    overflow: visible;
-    isolation: isolate;
-  }
-  
-  /* Titel & Toggle */
-  .hero__title{
-    margin:0 12px; color:#fff; font-weight:800;
-    font-size:clamp(40px, 7.5vw, 86px); text-align:center; letter-spacing:.5px;
-    text-shadow: 0 3px 6px rgba(0,0,0,.30), 0 12px 32px rgba(0,50,120,.35);
-    position: relative; z-index:3;
-  }
-  .hero__toggle{
-    position: relative; z-index:3;
-    display:flex; gap:clamp(18px,4vw,48px); margin-top:clamp(10px,2vh,16px);
-  }
-  .pill{
-    border:0; border-radius:999px; cursor:pointer;
-    padding:.7rem 1.4rem; font-weight:800; font-size:clamp(15px,2.2vw,20px);
-    background:#c8f0d7; color:#1a3a2a;
-    box-shadow: 0 10px 28px rgba(0,0,0,.16), 0 2px 0 rgba(255,255,255,.55) inset;
-    transition: transform .15s ease, filter .15s ease;
-  }
-  .pill:hover{ transform: translateY(-2px); filter: brightness(1.03); }
-  .pill.is-active{ background:#e5ffe0; }
-  
-  /* ===== Inseln als Pseudo-Elemente – sehr groß, vertikal NICHT abgeschnitten =====
-     Strategie:
-     - hero hat overflow:visible → keine vertikale Kante
-     - Inseln sind extragroß (Skalierung via --island-scale)
-     - nur links/rechts kann außerhalb liegen; body versteckt X-Overflow
-     - Farbangleichung via blend + Filter + weiches Masking am unteren Rand
-  */
-  .hero::before,
-  .hero::after{
-    content:"";
-    position: absolute;
-    /* vertikale Ausrichtung: in die Mitte der unteren Bildschirmhälfte setzen */
-    top: 65%;                         /* Grundhöhe */
-    transform:
-      translateY(-50%)
-      scale(var(--island-scale));     /* Gesamtgröße bequem verstellbar */
-    width: 120vw;                      /* sehr breit – darf links/rechts überstehen */
-    height: 120vh;                     /* höher als Viewport → keine Unterkante sichtbar */
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: bottom;
-    pointer-events: none;
-    z-index: 0;                        /* unter Brücke & UI */
-    /* Farbanpassung ans Wasser */
-    mix-blend-mode: soft-light;
-    filter:
-      saturate(.85)
-      hue-rotate(-6deg)
-      brightness(1.06)
-      drop-shadow(0 36px 56px rgba(0,40,80,.30))
-      drop-shadow(0 12px 22px rgba(0,0,0,.15));
-    opacity: .96;
-  
-    /* sanfter Masken-Fade am unteren Rand, um harte Kanten zu vermeiden */
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
-  }
-  
-  /* Linke Insel (Kopenhagen) */
-  .hero::before{
-    left: -30vw;                       /* weit nach links geschoben */
-    background-image: url("img/kopenhagen.png");
-    transform-origin: left bottom;
-    transform:
-      translateY(-50%)
-      scale(var(--island-scale))
-      rotate(-2deg);
-  }
-  
-  /* Rechte Insel (Malmö) */
-  .hero::after{
-    right: -30vw;                      /* weit nach rechts geschoben */
-    background-image: url("img/malmoe.png");
-    transform-origin: right bottom;
-    transform:
-      translateY(-50%)
-      scale(var(--island-scale))
-      rotate(2deg);
-  }
-  
-  /* ===== Brücke – groß, weiter unten, leicht nach rechts verschoben (berührt Malmö) ===== */
-  .bridge{
-    position:absolute; z-index:2;
-    left:50%;
-    transform: translateX(var(--bridge-shift)) rotate(.4deg);
-    width: clamp(560px, 52vw, 1100px); /* deutlich größer */
-    bottom: clamp(4vh, 10%, 12%);      /* weiter nach unten */
-    filter:
-      drop-shadow(0 28px 40px rgba(0,30,60,.40))
-      drop-shadow(0 10px 18px rgba(0,0,0,.18));
-  }
-  
-  @media (max-width: 640px){
-    :root{ --island-scale: 1.05; --bridge-shift: -46%; }
-    .bridge{ width: 78vw; bottom: 12vh; }
-  }
-  
-  /* === OVERRIDES für Positionen/Größe – GANZ UNTEN EINFÜGEN === */
-  :root{
-    --bridge-shift: -36%;
-    --bridge-bottom: 6%;
-    --left-left: -30vw;
-    --left-top: 78%;
-    --right-right: -36vw;
-    --right-top: 64%;
-  }
-  
-  .hero::before{
-    left: var(--left-left);
-    top: var(--left-top);
-    transform-origin: left bottom;
-    transform:
-      translateY(-50%)
-      scale(var(--island-scale))
-      rotate(-2deg);
-  }
-  
-  .hero::after{
-    right: var(--right-right);
-    top: var(--right-top);
-    transform-origin: right bottom;
-    transform:
-      translateY(-50%)
-      scale(var(--island-scale))
-      rotate(2deg);
-  }
-  
-  .bridge{
-    width: clamp(600px, 56vw, 1200px);
-    bottom: var(--bridge-bottom);
-    transform: translateX(var(--bridge-shift)) rotate(0.4deg);
-  }
-  /* === OVERRIDES: Inseln ohne blauen Film, rechts größer, alles weiter unten, Brücke größer === */
+  --hero-h: 120svh;                /* 96–100 svh */
 
-/* Feintuning-Variablen */
-:root{
-    --island-left-scale: 1.30;   /* Größe linke Insel */
-    --island-right-scale: 1.60;  /* Größe rechte Insel (größer) */
-    --islands-top-left:  82%;    /* je höher der Wert, desto weiter unten */
-    --islands-top-right: 78%;
-    --bridge-shift: -39%;        /* weiter nach rechts (Malmö berühren) */
-    --bridge-bottom: -10%;         /* weiter nach unten */
-  }
-  
-  /* Gemeinsame Basis: kein Farb-Blending mehr, klarere Farben */
-  .hero::before,
-  .hero::after{
-    /* weiter unten und größer */
-    top: 80%;
-    width: 130vw;
-    height: 130vh;
-  
-    /* WICHTIG: den blauen Film entfernen */
-    mix-blend-mode: normal;      /* war: soft-light */
-    opacity: 1;
-  
-    /* etwas neutralere Farb-Korrektur + weicher Tiefenschatten */
-    filter:
-      saturate(0.95)
-      brightness(1.02)
-      drop-shadow(0 28px 44px rgba(0,40,80,0.28))
-      drop-shadow(0 10px 18px rgba(0,0,0,0.14));
-  
-    /* optional weiches Ausblenden unten (kann auch komplett entfernt werden) */
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
-  }
-  
-  /* Linke Insel weiter nach unten */
-  .hero::before{
-    top: var(--islands-top-left);
-    left: -30vw;
-    transform-origin: left bottom;
-    transform:
-      translateY(-300px)
-      scale(var(--island-left-scale))
-      rotate(-2deg);
-  }
-  
-  /* Rechte Insel größer + weiter nach rechts außen */
-  .hero::after{
-    top: var(--islands-top-right);
-    right: -58vw; /* weiter raus nach rechts */
-    transform-origin: right bottom;
-    transform:
-      translateY(-40%)
-      scale(var(--island-right-scale))
-      rotate(2deg);
-  }
-  
-  /* Brücke größer, weiter unten & nach rechts (Malmö berühren) */
-  .bridge{
-    width: clamp(500px, 70vw, 1000px);
-    bottom: var(--bridge-bottom);
-    transform: translateX(var(--bridge-shift)) rotate(0.3deg);
-  }
-  
+  /* Bühne */
+  --scene-w: min(1400px, 96vw);
+  --scene-ratio: 16/9;
+
+  /* Linke Insel (Kopenhagen) */
+  --left-w: 172%;
+  --left-left: -29%;
+  --left-bottom: -29%;
+
+  /* Rechte Insel (Malmö) */
+  --right-w: 172%;
+  --right-right: -48%;
+  --right-bottom: -14%;
+
+  /* Brücke */
+  --bridge-w: 65%;
+  --bridge-bottom: 0%;             /* kleiner = tiefer */
+  --bridge-shift: -32%;            /* -34% = weiter rechts */
+}
+
+/* ===== Basis ===== */
+*{ box-sizing: border-box; font-family: "Inter", system-ui, sans-serif; }
+html, body{ height:100%; margin:0; }
+body{
+  color:#0a223a;
+  background:
+    radial-gradient(1200px 800px at 50% -10%, rgba(255,255,255,.2), transparent 60%),
+    linear-gradient(180deg, #bfe9ff 0%, #74c1ff 45%, #3da0ff 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* ===== Hero ===== */
+.hero{
+  position: relative;
+  height: var(--hero-h);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  justify-items: center;
+  padding-top: clamp(28px, 6vh, 72px);
+  overflow: hidden; /* schneidet außerhalb der Bühne unten sauber ab */
+  isolation: isolate;
+}
+
+/* Titel & Toggle */
+.hero__title{
+  margin:0 12px; color:#fff; font-weight:800;
+  font-size:clamp(40px, 7.5vw, 86px); text-align:center; letter-spacing:.5px;
+  text-shadow: 0 3px 6px rgba(0,0,0,.30), 0 12px 32px rgba(0,50,120,.35);
+  position: relative; z-index:3;
+}
+.hero__toggle{
+  position: relative; z-index:3;
+  display:flex; gap:clamp(36px, 5vw, 64px);
+  margin-top: clamp(14px, 2.4vh, 22px);
+}
+.pill{
+  border:0; border-radius:12px; cursor:pointer;
+  padding:.7rem 1.2rem; font-weight:800; font-size:clamp(15px, 2.2vw, 20px);
+  background:#c8f0d7; color:#1a3a2a;
+  box-shadow: 0 8px 22px rgba(0,0,0,.14), 0 1px 0 rgba(255,255,255,.55) inset;
+}
+
+/* ===== Bühne mit festem Seitenverhältnis ===== */
+.scene{
+  position: relative;
+  width: var(--scene-w);
+  aspect-ratio: var(--scene-ratio);
+  margin-top: clamp(12px, 3vh, 28px);
+  z-index: 1;
+}
+
+/* Gemeinsame Bild-Styles */
+.scene img{
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 28px 44px rgba(0,40,80,.28))
+    drop-shadow(0 10px 18px rgba(0,0,0,.14));
+}
+
+/* Linke Insel */
+.island--left{
+  width: var(--left-w);
+  left: var(--left-left);
+  bottom: var(--left-bottom);
+  transform: rotate(-2deg);
+  transform-origin: left bottom;
+  z-index: 1;
+}
+
+/* Rechte Insel */
+.island--right{
+  width: var(--right-w);
+  right: var(--right-right);
+  bottom: var(--right-bottom);
+  transform: rotate(2deg);
+  transform-origin: right bottom;
+  z-index: 1;
+}
+
+/* Brücke */
+.bridge{
+  width: var(--bridge-w);
+  left: 50%;
+  bottom: var(--bridge-bottom);
+  transform: translateX(var(--bridge-shift)) rotate(0.3deg);
+  z-index: 2; /* über Inseln, unter Titel/Buttons */
+  filter:
+    drop-shadow(0 24px 36px rgba(0,30,60,.40))
+    drop-shadow(0 8px 16px rgba(0,0,0,.18));
+}
+
+/* ===== Mobile Feinschliff ===== */
+@media (max-width: 640px){
   :root{
-    --bridge-bottom: -50.0%;   /* kleiner = tiefer (z.B. 1.6% → 1.2% → 0.8%) */
+    --scene-ratio: 16/10;
+    --left-w: 70%;  --left-left: -14%; --left-bottom: -6%;
+    --right-w: 72%; --right-right: -16%; --right-bottom: -6%;
+    --bridge-w: 66%; --bridge-bottom: 7%; --bridge-shift: -38%;
   }
-/* === Buttons weiter auseinander & weniger rund === */
-:root{
-    --pill-gap: clamp(50px, 5vw, 64px); /* Abstand zwischen den Buttons */
-    --pill-radius: 9px;                /* Rundung (kleiner = eckiger) */
-    --pill-py: 0.70rem;                 /* vertikales Padding */
-    --pill-px: 1.20rem;                 /* horizontales Padding */
+}
+/* === Schwebe-Animation für die Buttons === */
+.pill{
+  /* Grundzustand */
+  will-change: transform, box-shadow;
+  animation: pill-float 6s ease-in-out infinite;
+}
+
+/* Leicht versetzte Phasen, wirkt natürlicher */
+.hero__toggle .pill:nth-child(2){ animation-delay: 1.2s; }
+
+/* Beim Hover dezent anheben & Animation pausieren */
+.pill:hover{
+  animation-play-state: paused;           /* schweben „anhalten“ */
+  transform: translateY(-4px);            /* etwas höher als normaler Hover */
+  box-shadow: 0 14px 28px rgba(0,0,0,.16),
+              0 1px 0 rgba(255,255,255,.55) inset;
+}
+
+/* Klick-Feedback */
+.pill:active{
+  transform: translateY(-2px) scale(0.985);
+}
+
+/* Die eigentliche Bewegung */
+@keyframes pill-float{
+  0%,100%{
+    transform: translateY(0);
+    box-shadow: 0 8px 22px rgba(0,0,0,.14),
+                0 1px 0 rgba(255,255,255,.55) inset;
   }
-  
-  .hero__toggle{
-    gap: var(--pill-gap);
-    margin-top: clamp(14px, 2.4vh, 22px); /* optional: etwas mehr Abstand zum Titel */
+  50%{
+    transform: translateY(-6px);          /* Hub – gern anpassen */
+    box-shadow: 0 16px 30px rgba(0,0,0,.18),
+                0 1px 0 rgba(255,255,255,.55) inset;
   }
-  
-  .pill{
-    border-radius: var(--pill-radius);
-    padding: var(--pill-py) var(--pill-px);
-    /* optional: Schatten etwas dezenter, damit weniger „Pill“-Look */
-    box-shadow:
-      0 8px 22px rgba(0,0,0,.14),
-      0 1px 0 rgba(255,255,255,.55) inset;
-  }
-  
+}
+
+/* Bewegung respektvoll reduzieren, wenn gewünscht */
+@media (prefers-reduced-motion: reduce){
+  .pill{ animation: none; }
+}
+/* Hover: leicht vergrößern + abdunkeln */
+.pill{
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    background-color .2s ease,
+    filter .2s ease;
+}
+
+.pill:hover{
+  animation-play-state: paused;
+  transform: translateY(-6px) scale(1.04);      /* höher + größer */
+  filter: brightness(0.97) saturate(1.05);      /* minimal dunkler/satter */
+  box-shadow: 0 18px 34px rgba(0,0,0,.20),
+              0 1px 0 rgba(255,255,255,.55) inset;
+}
+
+/* Klick-Feedback */
+.pill:active{
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.95);
+}
+
+/* Tastaturfokus – sichtbar & hübsch */
+.pill:focus-visible{
+  outline: 2px solid rgba(0,0,0,.25);
+  outline-offset: 2px;
+}
+/* Szene sanft verschieben, wenn Ergebnis gezeigt wird */
+.scene{
+  transition: transform .6s cubic-bezier(.22,.61,.36,1), margin-top .6s;
+}
+.hero.results .scene{
+  transform: translateX(-50%) translateY(6%); /* Inseln nach unten */
+}
+
+/* Brücken-GIF deckungsgleich mit der PNG-Brücke */
+.bridge, .bridge-gif{ transition: opacity .3s ease; }
+.bridge-gif{
+  position: absolute;
+  width: var(--bridge-w);
+  left: 50%;
+  bottom: var(--bridge-bottom);
+  transform: translateX(var(--bridge-shift)) rotate(0.3deg);
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+.hero.results .bridge{ opacity: 0; }         /* PNG ausblenden */
+.hero.results .bridge-gif.show{ opacity: 1; }/* GIF einblenden */
+
+/* Ergebnis-Badges */
+.result{
+  position:absolute;
+  display:flex; gap:.5rem; align-items:center;
+  padding:.55rem .8rem;
+  background: rgba(255,255,255,.95);
+  border-radius: 12px;
+  font-weight:800;
+  box-shadow: 0 14px 28px rgba(0,0,0,.18);
+  opacity:0; transform: translateY(8px) scale(.96);
+  transition: transform .25s ease, opacity .25s ease;
+  z-index:4;
+}
+.result__label{ color:#275; opacity:.8; font-size:.9rem; }
+.result__value{ color:#0a223a; font-size:1.05rem; }
+
+/* Positionen der Badges relativ zur Szene – gern anpassen */
+.result--left {  left: 18%; bottom: 44%; }
+.result--right { right: 18%; bottom: 48%; }
+
+/* anzeigen */
+.hero.results .result.show{ opacity:1; transform: translateY(0) scale(1); }
+/* === Ergebnis-Visualisierung (Szene schiebt runter, GIF & Badges) === */
+.scene{
+  transition: transform .6s cubic-bezier(.22,.61,.36,1);
+}
+.hero.results .scene{
+  transform: translateX(-50%) translateY(6%); /* Inseln nach unten */
+}
+
+/* Brücken-GIF (liegt deckungsgleich über der PNG-Brücke) */
+.bridge, .bridge-gif{ transition: opacity .3s ease; }
+.bridge-gif{
+  position: absolute;
+  width: var(--bridge-w);
+  left: 50%;
+  bottom: var(--bridge-bottom);
+  transform: translateX(var(--bridge-shift)) rotate(0.3deg);
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+.hero.results .bridge{ opacity: 0; }         /* PNG-Brücke ausblenden */
+.hero.results .bridge-gif.show{ opacity: 1; }/* GIF einblenden */
+
+/* Ergebnis-Badges */
+.result{
+  position:absolute;
+  display:flex; gap:.5rem; align-items:center;
+  padding:.55rem .8rem;
+  background: rgba(255,255,255,.95);
+  border-radius: 12px;
+  font-weight:800;
+  box-shadow: 0 14px 28px rgba(0,0,0,.18);
+  opacity:0; transform: translateY(8px) scale(.96);
+  transition: transform .25s ease, opacity .25s ease;
+  z-index:4;
+  pointer-events: none;
+}
+.result__label{ color:#275; opacity:.8; font-size:.9rem; }
+.result__value{ color:#0a223a; font-size:1.05rem; }
+
+/* Badge-Positionen (gern feintunen) */
+.result--left  { left: 18%; bottom: 44%; }
+.result--right { right:18%; bottom: 48%; }
+
+/* anzeigen */
+.hero.results .result.show{ opacity:1; transform: translateY(0) scale(1); }
+/* Bridge-GIF deckungsgleich über der PNG-Brücke */
+.bridge, .bridge-gif { transition: opacity .25s ease; }
+
+.bridge-gif{
+  position: absolute;
+  width: var(--bridge-w);
+  left: 50%;
+  bottom: var(--bridge-bottom);
+  transform: translateX(var(--bridge-shift)) rotate(0.3deg);
+  z-index: 3;
+  opacity: 0;                 /* startet unsichtbar */
+  pointer-events: none;
+}
+
+/* Wenn wir das GIF zeigen, blenden wir die PNG aus */
+.hero.show-gif .bridge-gif{ opacity: 1; }
+/* erzwingt Sichtbarkeit der Brücke (GIF) */
+.bridge { opacity: 1 !important; display: block !important; }
+.bridge-gif          { opacity: 1 !important; }
+/* PNG-Brücke sichtbar lassen */
+.hero.show-gif .bridge { opacity: 1 !important; }
+
+/* GIF einfach normal oben drüber legen */
+.bridge      { z-index: 2; opacity: 1; }         /* PNG normal sichtbar */
+.bridge-gif  {
+  z-index: 3;
+  opacity: 1;
+  mix-blend-mode: normal !important;  /* <<< NICHT screen/multiply */
+}
+
+/* Falls irgendwo noch das Ausblenden steht, überschreiben: */
+.hero.show-gif .bridge      { opacity: 1 !important; }  /* PNG bleibt sichtbar */
+.hero.show-gif .bridge-gif  { opacity: 1 !important; }
+
+.hero__title{ cursor: pointer; user-select: none; }

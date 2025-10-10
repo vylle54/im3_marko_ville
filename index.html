@@ -7,18 +7,26 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <section id="hero" class="hero" aria-label="Wasserlandschaft">
+    <section class="hero" aria-label="Wasserlandschaft">
       <h1 class="hero__title">Wo lohnt sich’s</h1>
-
+    
       <div class="hero__toggle">
-        <button class="pill is-active" data-mode="shop">z’shoppe</button>
-        <button class="pill" data-mode="work">z’schaffe</button>
+        <button class="pill is-active">z’shoppe</button>
+        <button class="pill">z’schaffe</button>
       </div>
-
-      <!-- Brücke mittig -->
-      <img class="bridge" src="img/bridge.png" alt="Brücke zwischen Inseln" aria-hidden="true" />
+    
+      <div class="scene" aria-hidden="true">
+        <img class="island island--left"  src="img/kopenhagen.png" alt="">
+        <img class="bridge"               src="img/bridge.png"     alt="">
+        <img class="island island--right" src="img/malmoe.png"     alt="">
+      </div>
     </section>
-
-    <script src="script.js"></script>
+    
+    <!-- <img class="bridge" src="img/auto_faehrt_links.gif">  <-- DIESE ZEILE LÖSCHEN -->
+    <!-- Badges rausnehmen, kommen später wieder -->
+    
+    <!-- Script UNBEDINGT einbinden -->
+    <script src="script.js" defer></script>
+    
   </body>
 </html>
