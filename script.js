@@ -15,3 +15,13 @@
     setMode('shop');
   })();
   
+  document.addEventListener('DOMContentLoaded', () => {
+    const apiURL = "https://im3.villelindskog.ch/unload.php";
+
+    fetch(apiURL)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Abgerufene Daten:", data);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        
