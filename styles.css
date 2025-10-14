@@ -320,3 +320,16 @@ body{
 .hero.show-gif .bridge-gif  { opacity: 1 !important; }
 
 .hero__title{ cursor: pointer; user-select: none; }
+
+/* Signatur-Bild (Logo o.ä.) */
+.sign-img {
+  position: absolute;
+  top: 20px;         /* adjust as needed */
+  left: 20px;        /* adjust as needed */
+  width: 100px;      /* adjust as needed */
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+  border: 2px solid red;
+}

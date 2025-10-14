@@ -13,12 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.appendChild(bridgeGif);
   }
 
+  // Sign-Element erzeugen, falls nicht da
+  let signImg = document.getElementById('signImg');
+  if (!signImg) {
+    signImg = document.createElement('img');
+    signImg.id = 'signImg';
+    signImg.className = 'sign-img';
+    signImg.alt = 'Sign';
+    scene.appendChild(signImg);
+  }
+
   // *** DEINE Dateinamen mit "nach" ***
   const GIF_LEFT  = 'img/auto_faehrt_nach_links.gif';
   const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
+  const SIGN_LEFT  = 'img/sign_left.png';   // <-- Bild für links
+  const SIGN_RIGHT = 'img/sign_right.png';  // <-- Bild für rechts
 
   function playGif(direction){
     const src = direction === 'left' ? GIF_LEFT : GIF_RIGHT;
+    const signSrc = direction === 'left' ? SIGN_LEFT : SIGN_RIGHT;
 
     // PNG ausblenden, GIF zeigen
     hero.classList.add('show-gif');
@@ -31,6 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
       bridgeGif.onerror = (e) => console.error('GIF nicht gefunden:', src, e);
       bridgeGif.src = `${src}?t=${Date.now()}`; // Cache-Buster
     });
+
+    // Sign-Bild setzen
+    signImg.style.opacity = 0;
+    signImg.src = '';
+    requestAnimationFrame(() => {
+      signImg.onload = () => { signImg.style.opacity = 1; };
+      signImg.onerror = (e) => console.error('Sign nicht gefunden:', signSrc, e);
+      signImg.src = signSrc;
+    });
   }
 
   btnShop?.addEventListener('click',  () => playGif('left'));
@@ -42,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function resetView(){
   const hero       = document.querySelector('.hero');
   const bridgeGif  = document.getElementById('bridgeGif');
+  const signImg    = document.getElementById('signImg');
   const badgeLeft  = document.getElementById('badgeLeft');
   const badgeRight = document.getElementById('badgeRight');
   const [btnShop, btnWork] = document.querySelectorAll('.hero__toggle .pill');
@@ -58,6 +81,12 @@ function resetView(){
     bridgeGif.classList.remove('show');
     bridgeGif.style.opacity = 0;
     bridgeGif.src = ''; // stoppt Animation
+  }
+
+  // Sign ausblenden
+  if (signImg) {
+    signImg.style.opacity = 0;
+    signImg.src = '';
   }
 
   // sanft nach oben scrollen
