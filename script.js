@@ -23,6 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.appendChild(signImg);
   }
 
+  // Text-Elemente erzeugen, falls nicht da
+  let signTextLeft = document.getElementById('signTextLeft');
+  if (!signTextLeft) {
+    signTextLeft = document.createElement('span');
+    signTextLeft.id = 'signTextLeft';
+    signTextLeft.className = 'sign-text sign-text--left';
+    signTextLeft.innerHTML = '7.9<br>DKK'; // <-- line break added
+    scene.appendChild(signTextLeft);
+  }
+  let signTextRight = document.getElementById('signTextRight');
+  if (!signTextRight) {
+    signTextRight = document.createElement('span');
+    signTextRight.id = 'signTextRight';
+    signTextRight.className = 'sign-text sign-text--right';
+    signTextRight.innerHTML = '11.8<br>SEK'; // <-- line break added
+    scene.appendChild(signTextRight);
+  }
+
   // *** DEINE Dateinamen mit "nach" ***
   const GIF_LEFT  = 'img/auto_faehrt_nach_links.gif';
   const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
@@ -53,6 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
       signImg.onerror = (e) => console.error('Sign nicht gefunden:', signSrc, e);
       signImg.src = signSrc;
     });
+
+    // Text anzeigen
+    signTextLeft.style.opacity = 1;
+    signTextRight.style.opacity = 1;
   }
 
   btnShop?.addEventListener('click',  () => playGif('left'));
@@ -60,11 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('[wired]', { btnShop: !!btnShop, btnWork: !!btnWork, scene: !!scene });
 });
+
 // Reset-Logik (falls noch nicht vorhanden)
 function resetView(){
   const hero       = document.querySelector('.hero');
   const bridgeGif  = document.getElementById('bridgeGif');
   const signImg    = document.getElementById('signImg');
+  const signTextLeft  = document.getElementById('signTextLeft');
+  const signTextRight = document.getElementById('signTextRight');
   const badgeLeft  = document.getElementById('badgeLeft');
   const badgeRight = document.getElementById('badgeRight');
   const [btnShop, btnWork] = document.querySelectorAll('.hero__toggle .pill');
@@ -88,6 +113,10 @@ function resetView(){
     signImg.style.opacity = 0;
     signImg.src = '';
   }
+
+  // Text ausblenden
+  if (signTextLeft)  signTextLeft.style.opacity = 0;
+  if (signTextRight) signTextRight.style.opacity = 0;
 
   // sanft nach oben scrollen
   window.scrollTo({ top: 0, behavior: 'smooth' });
