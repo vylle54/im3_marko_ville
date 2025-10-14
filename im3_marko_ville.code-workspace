@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../../../Downloads/IM3_HS25_PHP_DB-main"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "im3_marko_ville"
+	}
+}
