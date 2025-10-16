@@ -1,17 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const hero  = document.querySelector('.hero');
   const scene = document.querySelector('.scene');
   const [btnShop, btnWork] = document.querySelectorAll('.hero__toggle .pill');
-
-  // GIF-Element erzeugen, falls nicht da
-  let bridgeGif = document.getElementById('bridgeGif');
-  if (!bridgeGif) {
-    bridgeGif = document.createElement('img');
-    bridgeGif.id = 'bridgeGif';
-    bridgeGif.className = 'bridge-gif';
-    bridgeGif.alt = '';
-    scene.appendChild(bridgeGif);
-  }
 
   // Sign-Element erzeugen, falls nicht da
   let signImg = document.getElementById('signImg');
@@ -23,29 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.appendChild(signImg);
   }
 
-  // Text-Elemente erzeugen, falls nicht da
-  let signTextLeft = document.getElementById('signTextLeft');
-  if (!signTextLeft) {
-    signTextLeft = document.createElement('span');
-    signTextLeft.id = 'signTextLeft';
-    signTextLeft.className = 'sign-text sign-text--left';
-    scene.appendChild(signTextLeft);
-  }
-  let signTextRight = document.getElementById('signTextRight');
-  if (!signTextRight) {
-    signTextRight = document.createElement('span');
-    signTextRight.id = 'signTextRight';
-    signTextRight.className = 'sign-text sign-text--right';
-    scene.appendChild(signTextRight);
-  }
+  // Werte initialisieren
+  let dkk = 0.0;
+  let sek = 0.0;
 
-  // *** DEINE Dateinamen mit "nach" ***
-  const GIF_LEFT  = 'img/auto_faehrt_nach_links.gif';
-  const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
-  const SIGN_LEFT  = 'img/sign_left.png';
-  const SIGN_RIGHT = 'img/sign_right.png';
-
-  // Fetch latest values from API and always use them if available, fallback is 0.0
+  // Werte aus API laden
   fetch('https://im3.villelindskog.ch/unload.php')
     .then(res => res.json())
     .then(data => {
@@ -71,64 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
       updateSignTexts('0,0', '0,0');
     });
 
-  // Helper to format value as "7,9"
-  function formatCurrency(val) {
-    // Accepts string or number, with dot or comma
-    if (typeof val === 'string') {
-      // If already has a comma, return as is
-      if (val.includes(',')) return val;
-      // If has a dot, convert to comma
-      if (val.includes('.')) return val.replace('.', ',');
-      // Try to parse as float
-      let num = parseFloat(val.replace(',', '.'));
-      if (!isNaN(num)) return num.toFixed(1).replace('.', ',');
-      return '0,0';
+  // Button-Logik
+  btnWork?.addEventListener('click', () => {
+    // "z'schaffe"
+    if (sek > dkk) {
+      signImg.src = 'img/sign_left.png';
+    } else {
+      signImg.src = 'img/sign_right.png';
     }
-    if (typeof val === 'number') {
-      return val.toFixed(1).replace('.', ',');
+    signImg.style.opacity = 1;
+  });
+
+  btnShop?.addEventListener('click', () => {
+    // "z'shoppe"
+    if (sek > dkk) {
+      signImg.src = 'img/sign_right.png';
+    } else {
+      signImg.src = 'img/sign_left.png';
     }
-    return '0,0';
-  }
-
-  function updateSignTexts(dkk, sek) {
-    signTextLeft.innerHTML = `<span style="color:#fff;">${dkk}</span><br><span style="color:#C8102E;">DKK</span>`;
-    signTextRight.innerHTML = `<span style="color:#FECB00;">${sek}</span><br><span style="color:#005293;">SEK</span>`;
-  }
-
-  function playGif(direction){
-    const src = direction === 'left' ? GIF_LEFT : GIF_RIGHT;
-    const signSrc = direction === 'left' ? SIGN_LEFT : SIGN_RIGHT;
-
-    // PNG ausblenden, GIF zeigen
-    hero.classList.add('show-gif');
-
-    // GIF neu starten
-    bridgeGif.style.opacity = 0;
-    bridgeGif.src = '';
-    requestAnimationFrame(() => {
-      bridgeGif.onload  = () => { bridgeGif.style.opacity = 1; };
-      bridgeGif.onerror = (e) => console.error('GIF nicht gefunden:', src, e);
-      bridgeGif.src = `${src}?t=${Date.now()}`; // Cache-Buster
-    });
-
-    // Sign-Bild setzen
-    signImg.style.opacity = 0;
-    signImg.src = '';
-    requestAnimationFrame(() => {
-      signImg.onload = () => { signImg.style.opacity = 1; };
-      signImg.onerror = (e) => console.error('Sign nicht gefunden:', signSrc, e);
-      signImg.src = signSrc;
-    });
-
-    // Text anzeigen
-    signTextLeft.style.opacity = 1;
-    signTextRight.style.opacity = 1;
-  }
-
-  btnShop?.addEventListener('click',  () => playGif('left'));
-  btnWork?.addEventListener('click', () => playGif('right'));
-
-  console.log('[wired]', { btnShop: !!btnShop, btnWork: !!btnWork, scene: !!scene });
+    signImg.style.opacity = 1;
+  });
 });
 
 // Reset-Logik (falls noch nicht vorhanden)
