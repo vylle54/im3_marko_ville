@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     signTextLeft = document.createElement('span');
     signTextLeft.id = 'signTextLeft';
     signTextLeft.className = 'sign-text sign-text--left';
-    signTextLeft.innerHTML = '7.9<br>DKK'; // <-- line break added
     scene.appendChild(signTextLeft);
   }
   let signTextRight = document.getElementById('signTextRight');
@@ -37,15 +36,64 @@ document.addEventListener('DOMContentLoaded', () => {
     signTextRight = document.createElement('span');
     signTextRight.id = 'signTextRight';
     signTextRight.className = 'sign-text sign-text--right';
-    signTextRight.innerHTML = '11.8<br>SEK'; // <-- line break added
     scene.appendChild(signTextRight);
   }
 
   // *** DEINE Dateinamen mit "nach" ***
   const GIF_LEFT  = 'img/auto_faehrt_nach_links.gif';
   const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
-  const SIGN_LEFT  = 'img/sign_left.png';   // <-- Bild für links
-  const SIGN_RIGHT = 'img/sign_right.png';  // <-- Bild für rechts
+  const SIGN_LEFT  = 'img/sign_left.png';
+  const SIGN_RIGHT = 'img/sign_right.png';
+
+  // Fetch latest values from API and always use them if available, fallback is 0.0
+  fetch('https://im3.villelindskog.ch/unload.php')
+    .then(res => res.json())
+    .then(data => {
+      let dkk = '0,0';
+      let sek = '0,0';
+
+      if (Array.isArray(data) && data.length > 0) {
+        for (let i = data.length - 1; i >= 0; i--) {
+          const entry = data[i];
+          if (entry.currency && entry.currency.toUpperCase() === 'DKK' && dkk === '0,0' && entry.rate != null && entry.rate !== '') {
+            dkk = formatCurrency(entry.rate);
+          }
+          if (entry.currency && entry.currency.toUpperCase() === 'SEK' && sek === '0,0' && entry.rate != null && entry.rate !== '') {
+            sek = formatCurrency(entry.rate);
+          }
+          if (dkk !== '0,0' && sek !== '0,0') break;
+        }
+      }
+      updateSignTexts(dkk, sek);
+    })
+    .catch(err => {
+      console.error('API fetch error:', err);
+      updateSignTexts('0,0', '0,0');
+    });
+
+  // Helper to format value as "7,9"
+  function formatCurrency(val) {
+    // Accepts string or number, with dot or comma
+    if (typeof val === 'string') {
+      // If already has a comma, return as is
+      if (val.includes(',')) return val;
+      // If has a dot, convert to comma
+      if (val.includes('.')) return val.replace('.', ',');
+      // Try to parse as float
+      let num = parseFloat(val.replace(',', '.'));
+      if (!isNaN(num)) return num.toFixed(1).replace('.', ',');
+      return '0,0';
+    }
+    if (typeof val === 'number') {
+      return val.toFixed(1).replace('.', ',');
+    }
+    return '0,0';
+  }
+
+  function updateSignTexts(dkk, sek) {
+    signTextLeft.innerHTML = `<span style="color:#fff;">${dkk}</span><br><span style="color:#C8102E;">DKK</span>`;
+    signTextRight.innerHTML = `<span style="color:#FECB00;">${sek}</span><br><span style="color:#005293;">SEK</span>`;
+  }
 
   function playGif(direction){
     const src = direction === 'left' ? GIF_LEFT : GIF_RIGHT;
