@@ -12,56 +12,64 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.appendChild(signImg);
   }
 
-  // Werte initialisieren
-  let dkk = 0.0;
-  let sek = 0.0;
+  // Text-Elemente erzeugen, falls nicht da
+  let signTextLeft = document.getElementById('signTextLeft');
+  if (!signTextLeft) {
+    signTextLeft = document.createElement('span');
+    signTextLeft.id = 'signTextLeft';
+    signTextLeft.className = 'sign-text sign-text--left';
+    signTextLeft.innerHTML = '7.9<br>DKK'; // <-- line break added
+    scene.appendChild(signTextLeft);
+  }
+  let signTextRight = document.getElementById('signTextRight');
+  if (!signTextRight) {
+    signTextRight = document.createElement('span');
+    signTextRight.id = 'signTextRight';
+    signTextRight.className = 'sign-text sign-text--right';
+    signTextRight.innerHTML = '11.8<br>SEK'; // <-- line break added
+    scene.appendChild(signTextRight);
+  }
 
-  // Werte aus API laden
-  fetch('https://im3.villelindskog.ch/unload.php')
-    .then(res => res.json())
-    .then(data => {
-      let dkk = '0,0';
-      let sek = '0,0';
+  // *** DEINE Dateinamen mit "nach" ***
+  const GIF_LEFT  = 'img/auto_faehrt_nach_links.gif';
+  const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
+  const SIGN_LEFT  = 'img/sign_left.png';   // <-- Bild für links
+  const SIGN_RIGHT = 'img/sign_right.png';  // <-- Bild für rechts
 
-      if (Array.isArray(data) && data.length > 0) {
-        for (let i = data.length - 1; i >= 0; i--) {
-          const entry = data[i];
-          if (entry.currency && entry.currency.toUpperCase() === 'DKK' && dkk === '0,0' && entry.rate != null && entry.rate !== '') {
-            dkk = formatCurrency(entry.rate);
-          }
-          if (entry.currency && entry.currency.toUpperCase() === 'SEK' && sek === '0,0' && entry.rate != null && entry.rate !== '') {
-            sek = formatCurrency(entry.rate);
-          }
-          if (dkk !== '0,0' && sek !== '0,0') break;
-        }
-      }
-      updateSignTexts(dkk, sek);
-    })
-    .catch(err => {
-      console.error('API fetch error:', err);
-      updateSignTexts('0,0', '0,0');
+  function playGif(direction){
+    const src = direction === 'left' ? GIF_LEFT : GIF_RIGHT;
+    const signSrc = direction === 'left' ? SIGN_LEFT : SIGN_RIGHT;
+
+    // PNG ausblenden, GIF zeigen
+    hero.classList.add('show-gif');
+
+    // GIF neu starten
+    bridgeGif.style.opacity = 0;
+    bridgeGif.src = '';
+    requestAnimationFrame(() => {
+      bridgeGif.onload  = () => { bridgeGif.style.opacity = 1; };
+      bridgeGif.onerror = (e) => console.error('GIF nicht gefunden:', src, e);
+      bridgeGif.src = `${src}?t=${Date.now()}`; // Cache-Buster
     });
 
-  // Button-Logik
-  btnWork?.addEventListener('click', () => {
-    // "z'schaffe"
-    if (sek > dkk) {
-      signImg.src = 'img/sign_left.png';
-    } else {
-      signImg.src = 'img/sign_right.png';
-    }
-    signImg.style.opacity = 1;
-  });
+    // Sign-Bild setzen
+    signImg.style.opacity = 0;
+    signImg.src = '';
+    requestAnimationFrame(() => {
+      signImg.onload = () => { signImg.style.opacity = 1; };
+      signImg.onerror = (e) => console.error('Sign nicht gefunden:', signSrc, e);
+      signImg.src = signSrc;
+    });
 
-  btnShop?.addEventListener('click', () => {
-    // "z'shoppe"
-    if (sek > dkk) {
-      signImg.src = 'img/sign_right.png';
-    } else {
-      signImg.src = 'img/sign_left.png';
-    }
-    signImg.style.opacity = 1;
-  });
+    // Text anzeigen
+    signTextLeft.style.opacity = 1;
+    signTextRight.style.opacity = 1;
+  }
+
+  btnShop?.addEventListener('click',  () => playGif('left'));
+  btnWork?.addEventListener('click', () => playGif('right'));
+
+  console.log('[wired]', { btnShop: !!btnShop, btnWork: !!btnWork, scene: !!scene });
 });
 
 // Reset-Logik (falls noch nicht vorhanden)
