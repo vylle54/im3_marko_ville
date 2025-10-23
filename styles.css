@@ -357,3 +357,147 @@ body{
   left: 58%;  /* adjust as needed for spacing */
   text-align: left;
 }
+/* ===== Mobile-Optimierungen ===== */
+
+/* ≤ 640px hast du bereits – hier feintunen für sehr kleine Geräte */
+@media (max-width: 480px){
+  :root{
+    /* Bühne kompakter machen */
+    --hero-h: 105svh;
+    --scene-ratio: 16/11;
+
+    /* Inseln etwas kleiner & höher */
+    --left-w: 82%;
+    --left-left: -18%;
+    --left-bottom: -4%;
+
+    --right-w: 84%;
+    --right-right: -20%;
+    --right-bottom: -4%;
+
+    /* Brücke leicht kleiner & tiefer */
+    --bridge-w: 62%;
+    --bridge-bottom: 6%;
+    --bridge-shift: -36%;
+  }
+
+  .hero{
+    grid-template-rows: auto auto 1fr;
+    padding-top: clamp(18px, 5vh, 40px);
+  }
+
+  .hero__title{
+    font-size: clamp(32px, 9vw, 54px);
+    line-height: 1.05;
+    margin-inline: 10px;
+  }
+
+  .hero__toggle{
+    gap: clamp(14px, 4vw, 22px);
+    margin-top: clamp(10px, 2.5vh, 18px);
+  }
+
+  /* Touch-Zielgröße + bessere Lesbarkeit */
+  .pill{
+    padding: 0.9rem 1.15rem;
+    font-size: clamp(16px, 4.2vw, 18px);
+    border-radius: 14px;
+    min-height: 44px;          /* Apple/Material Guideline */
+    letter-spacing: .2px;
+  }
+
+  /* Szene etwas niedriger wirken lassen, damit Buttons/Titel Luft haben */
+  .scene{ margin-top: clamp(8px, 2.4vh, 16px); }
+}
+
+/* sehr kleine Geräte (z. B. iPhone SE) */
+@media (max-width: 360px){
+  :root{
+    --scene-ratio: 16/12;
+    --bridge-w: 60%;
+    --bridge-bottom: 7%;
+    --bridge-shift: -37%;
+  }
+
+  /* Pills untereinander stapeln, wenn horizontal zu eng */
+  .hero__toggle{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: min(92vw, 420px);
+  }
+  .hero__toggle .pill{
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero__title{ font-size: clamp(28px, 9.8vw, 44px); }
+}
+
+/* leichte Performance/Lesbarkeits-Reduktion der Schatten auf Handy */
+@media (max-width: 640px){
+  .scene img{
+    filter:
+      drop-shadow(0 18px 28px rgba(0,40,80,.22))
+      drop-shadow(0 6px 12px rgba(0,0,0,.12));
+  }
+  .bridge{
+    filter:
+      drop-shadow(0 18px 26px rgba(0,30,60,.30))
+      drop-shadow(0 6px 12px rgba(0,0,0,.16));
+  }
+}
+
+/* Wenn Ergebnisse gezeigt werden, Szene auf Handy etwas weniger weit nach unten schieben */
+@media (max-width: 480px){
+  .hero.results .scene{
+    transform: translateX(-50%) translateY(4%);
+  }
+}
+
+/* Sign & Zahlen etwas größer auf Handy */
+@media (max-width: 480px){
+  .sign-img{ width: 10vw; min-width: 48px; }
+  .sign-text{
+    font-size: clamp(16px, 4.4vw, 20px);
+  }
+}
+/* ===== Mobile Anpassung: Inseln & Brücke dichter ===== */
+@media (max-width: 640px){
+  :root{
+    /* Inseln größer und etwas höher */
+    --left-w: 115%;      /* vorher ~70% */
+    --left-left: -25%;   /* leicht weiter zur Mitte */
+    --left-bottom: -8%;
+
+    --right-w: 118%;     /* vorher ~72% */
+    --right-right: -30%; /* näher an Brücke */
+    --right-bottom: -8%;
+
+    /* Brücke etwas höher und leicht nach rechts */
+    --bridge-w: 72%;     /* größer, damit sie Malmö berührt */
+    --bridge-bottom: 5%;
+    --bridge-shift: -38%; /* Position feintunen */
+  }
+}
+/* ==== Mobile-Override NUR für Größen/Position ==== */
+/* etwas großzügigeres Breakpoint, falls dein Viewport > 640 ist */
+/* === MOBILE FIX: Inseln größer + Malmö weiter rechts === */
+@media (max-width: 768px){
+  :root{
+    /* Linke Insel (Kopenhagen) – größer & etwas höher */
+    --left-w: 145% !important;
+    --left-left: -26% !important;
+    --left-bottom: -10% !important;
+
+    /* Rechte Insel (Malmö) – größer & weiter nach rechts verschoben */
+    --right-w: 150% !important;
+    --right-right: -42% !important;
+    --right-bottom: 2% !important;
+
+    /* Brücke – etwas größer & leicht verschoben, damit sie Malmö trifft */
+    --bridge-w: 70% !important;
+    --bridge-bottom: 8% !important;
+    --bridge-shift: -30% !important;
+  }
+}
