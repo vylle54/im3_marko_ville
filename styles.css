@@ -1,9 +1,8 @@
 /* ===== Stellschrauben ===== */
 :root{
-  --hero-h: 120svh;                /* 96–100 svh */
-
-  /* Bühne */
-  --scene-w: min(1400px, 96vw);
+  --hero-h: 120svh;
+  /* Szene jetzt volle Viewport-Breite (keine seitlichen gaps) */
+  --scene-w: 100vw;
   --scene-ratio: 16/9;
 
   /* Linke Insel (Kopenhagen) */
@@ -42,7 +41,7 @@ body{
   grid-template-rows: auto auto 1fr;
   justify-items: center;
   padding-top: clamp(28px, 6vh, 72px);
-  overflow: hidden; /* schneidet außerhalb der Bühne unten sauber ab */
+  overflow: visible; /* geändert: Canvas darf sichtbar sein */
   isolation: isolate;
 }
 
@@ -65,13 +64,19 @@ body{
   box-shadow: 0 8px 22px rgba(0,0,0,.14), 0 1px 0 rgba(255,255,255,.55) inset;
 }
 
-/* ===== Bühne mit festem Seitenverhältnis ===== */
+/* Bühne mit explizitem Abschneiden */
 .scene{
   position: relative;
   width: var(--scene-w);
+  max-width: none;        /* entfernen eventueller Beschränkung */
   aspect-ratio: var(--scene-ratio);
   margin-top: clamp(12px, 3vh, 28px);
   z-index: 1;
+  overflow: hidden;
+  margin-left: 0;
+  margin-right: 0;
+  left: 50%;
+  transform: translateX(-50%); /* zentriert in Bezug auf viewport */
 }
 
 /* Gemeinsame Bild-Styles */
@@ -501,3 +506,20 @@ body{
     --bridge-shift: -30% !important;
   }
 }
+
+#rateChart {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -30vh;
+  width: min(64vw, 720px);   /* weniger breit: max 720px oder 64vw */
+  max-width: 720px;
+  height: auto;
+  max-height: 40vh;         /* ggf. anpassen */
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* Falls du möchtest, dass die Szene weiterhin über dem Chart liegt */
+.scene { z-index: 1; }

@@ -120,6 +120,95 @@ document.addEventListener('DOMContentLoaded', () => {
   btnWork?.addEventListener('click', () => playGif('right'));
 
   console.log('[wired]', { btnShop: !!btnShop, btnWork: !!btnWork, scene: !!scene });
+
+  // === Chart.js Visualisierung (robust, keine globale "data"-Referenz) ===
+  (function initChart() {
+    const canvas = document.getElementById('rateChart');
+    if (!canvas) {
+      console.warn('#rateChart nicht gefunden — Chart wird nicht initialisiert.');
+      return;
+    }
+    if (typeof Chart === 'undefined') {
+      console.error('Chart.js ist nicht geladen. Stelle sicher, dass das CDN-Script vor script.js eingebunden ist.');
+      return;
+    }
+
+    fetch('https://im3.villelindskog.ch/unload.php')
+      .then(res => res.json())
+      .then(apiData => {
+        if (!Array.isArray(apiData) || apiData.length === 0) {
+          console.warn('Keine Daten für Chart gefunden');
+          return;
+        }
+
+        const dkkData = apiData.filter(i => i.currency && i.currency.toUpperCase() === 'DKK');
+        const sekData = apiData.filter(i => i.currency && i.currency.toUpperCase() === 'SEK');
+
+        const labels = [...new Set(apiData.map(i => i.timestamp).filter(Boolean))].sort();
+
+        const parseRate = v => {
+          if (v == null || v === '') return null;
+          const n = parseFloat(String(v).replace(',', '.'));
+          return isNaN(n) ? null : n;
+        };
+
+        const dkkValues = labels.map(ts => {
+          const e = dkkData.find(item => item.timestamp === ts);
+          return e ? parseRate(e.rate) : null;
+        });
+        const sekValues = labels.map(ts => {
+          const e = sekData.find(item => item.timestamp === ts);
+          return e ? parseRate(e.rate) : null;
+        });
+
+        const ctx = canvas.getContext('2d');
+        if (canvas._chartInstance) {
+          canvas._chartInstance.destroy();
+          canvas._chartInstance = null;
+        }
+
+        canvas._chartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'DKK',
+                data: dkkValues,
+                borderColor: '#C8102E',
+                backgroundColor: 'rgba(200,16,46,0.08)',
+                tension: 0.3,
+                spanGaps: true,
+                fill: true
+              },
+              {
+                label: 'SEK',
+                data: sekValues,
+                borderColor: '#005293',
+                backgroundColor: 'rgba(0,82,147,0.08)',
+                tension: 0.3,
+                spanGaps: true,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'Wechselkursentwicklung (DKK vs. SEK)' }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Zeit' } },
+              y: { title: { display: true, text: 'Kurs' }, beginAtZero: false }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error('Fehler beim Laden der Chart-Daten:', err);
+      });
+  })();
 });
 
 // Reset-Logik (falls noch nicht vorhanden)
@@ -166,21 +255,76 @@ document.querySelector('.hero__title')?.addEventListener('click', (e) => {
   e.preventDefault();
   resetView();
 });
-
-// Chart zügs
-const config = {
-  type: 'line',
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart'
-      }
+// === Chart.js Visualisierung ===
+fetch('https://im3.villelindskog.ch/unload.php')
+  .then(res => res.json())
+  .then(data => {
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('Keine Daten für Chart gefunden');
+      return;
     }
-  },
-};
+
+    // Nur DKK und SEK filtern
+    const dkkData = data.filter(item => item.currency === 'DKK');
+    const sekData = data.filter(item => item.currency === 'SEK');
+
+    // Labels (Zeitstempel) – davon ausgehend, dass beide Reihen gleiche Zeitstempel haben
+    const labels = [...new Set(data.map(item => item.timestamp))].sort();
+
+    // Werte extrahieren
+    const dkkValues = labels.map(ts => {
+      const entry = dkkData.find(item => item.timestamp === ts);
+      return entry ? parseFloat(entry.rate) : null;
+    });
+
+    const sekValues = labels.map(ts => {
+      const entry = sekData.find(item => item.timestamp === ts);
+      return entry ? parseFloat(entry.rate) : null;
+    });
+
+    const ctx = document.getElementById('rateChart').getContext('2d');
+
+    // entferne/vermeide globale Referenzen auf "data" (verursacht ReferenceError)
+    // Statt einer Zeile wie `const config = { type: 'line', data: data, ... }` nutze einen Platzhalter:
+    const chartConfigPlaceholder = {
+      type: 'line',
+      data: { labels: [], datasets: [] },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'Wechselkursentwicklung (DKK vs. SEK)' }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Zeit' } },
+          y: { title: { display: true, text: 'Kurs' }, beginAtZero: false }
+        }
+      }
+    };
+
+    new Chart(ctx, {
+      ...chartConfigPlaceholder,
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'DKK',
+            data: dkkValues,
+            borderColor: '#C8102E',  // rot
+            backgroundColor: 'rgba(200,16,46,0.1)',
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'SEK',
+            data: sekValues,
+            borderColor: '#005293',  // blau
+            backgroundColor: 'rgba(0,82,147,0.1)',
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      }
+    });
+  })
+  .catch(err => console.error('Fehler beim Laden der Chart-Daten:', err));
