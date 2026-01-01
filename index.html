@@ -1,36 +1,69 @@
 <!doctype html>
 <html lang="de">
   <head>
+    <!-- Zeichenkodierung und Viewport für responsive Darstellung -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wo lohnt sich’s</title>
-    <link rel="stylesheet" href="styles.css" />
+    
+    <!-- Seitentitel -->
+    <title>Wo lohnt sich's</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="img/favicon.ico" />
+    
+    <!-- Stylesheet einbinden -->
+    <link rel="stylesheet" href="style/styles.css" />
   </head>
+  
   <body>
-    <section class="hero" aria-label="Wasserlandschaft">
-      <h1 class="hero__title">Wo lohnt sich’s</h1>
-    
-      <div class="hero__toggle">
-        <button class="pill is-active">z’shoppe</button>
-        <button class="pill">z’schaffe</button>
-      </div>
-    
-      <div class="scene" aria-hidden="true">
-        <img class="island island--left"  src="img/kopenhagen.png" alt="">
-        <img class="bridge"               src="img/bridge.png"     alt="">
-        <img class="island island--right" src="img/malmoe.png"     alt="">
-      </div>
+    <!-- Hauptinhalt der Seite -->
+    <main>
+      <!-- Hero-Bereich mit Wasserlandschaft und Animation -->
+      <section class="hero" aria-label="Wasserlandschaft zwischen Kopenhagen und Malmö">
+        
+        <!-- Haupttitel der Seite -->
+        <h1 class="hero__title">Wo lohnt sich's</h1>
+      
+        <!-- Auswahlbuttons: Shopping oder Arbeiten -->
+        <div class="hero__toggle">
+          <button class="pill is-active" aria-label="Shopping vergleichen">z'shoppe</button>
+          <button class="pill" aria-label="Arbeiten vergleichen">z'schaffe</button>
+        </div>
+      
+        <!-- Visuelle Szene mit Inseln und Brücke -->
+        <div class="scene" aria-hidden="true">
+          <img class="island island--left" src="img/kopenhagen.png" alt="Insel Kopenhagen" />
+          <img class="bridge" src="img/bridge.png" alt="Brücke zwischen den Inseln" />
+          <img class="island island--right" src="img/malmoe.png" alt="Insel Malmö" />
+        </div>
 
-      <!-- Canvas für Chart -->
-      <canvas id="rateChart" width="400" height="200"></canvas>
-    </section>
+        <!-- Zeitraum-Auswahl für Chart -->
+        <div class="chart-controls">
+          <select id="timeRangeSelect" class="time-dropdown" aria-label="Zeitraum auswählen">
+            <option value="" disabled selected>Zeitraum Auswählen</option>
+            <option value="7">Vor einer Woche</option>
+            <option value="14">Vor zwei Wochen</option>
+            <option value="21">Vor drei Wochen</option>
+            <option value="28">Vor vier Wochen</option>
+            <option value="35">Vor fünf Wochen</option>
+          </select>
+        </div>
+
+        <!-- Canvas-Element für Wechselkurs-Chart (Chart.js) -->
+        <canvas id="rateChart" width="400" height="200" aria-label="Wechselkurs-Diagramm für DKK und SEK"></canvas>
+      </section>
+    </main>
     
-    <!-- <img class="bridge" src="img/auto_faehrt_links.gif">  <-- DIESE ZEILE LÖSCHEN -->
-    <!-- Badges rausnehmen, kommen später wieder -->
+    <!-- Footer mit Copyright-Information -->
+    <footer class="footer">
+      <p>&copy; 2025 Wo lohnt sich's | Marko & Ville</p>
+    </footer>
     
-    <!-- Bibliothek zuerst, dann dein Script -->
+    <!-- JavaScript-Bibliotheken -->
+    <!-- Chart.js für die Visualisierung -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js" defer></script>
+    <!-- Eigene JavaScript-Datei -->
+    <script src="script/script.js" defer></script>
     
   </body>
 </html>
