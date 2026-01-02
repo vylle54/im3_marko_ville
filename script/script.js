@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Bild-Pfade für die Animation
   const GIF_LEFT = 'img/auto_faehrt_nach_links.gif';
   const GIF_RIGHT = 'img/auto_faehrt_nach_rechts.gif';
-  const SIGN_LEFT = 'img/sign_left.png';
-  const SIGN_RIGHT = 'img/sign_right.png';
+  const SIGN_LEFT = 'img/sign_left.svg';
+  const SIGN_RIGHT = 'img/sign_right.svg';
   
   // API-Endpunkt
   const API_URL = 'https://im3.villelindskog.ch/unload.php';
