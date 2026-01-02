@@ -11,6 +11,11 @@ Eine interaktive Webseite zum Vergleich von Wechselkursen zwischen Dänemark und
 - 🎯 Vergleich: Shopping vs. Arbeiten
 - 📱 Responsive Design für alle Geräte
 
+## 😡 Schwierigkeiten
+
+Wir haben dieses Projekt bewusst simpel gehalten und so wenig Datenpunkte wie möglich gesammelt. Rückblickend müssen wir jedoch feststellen, dass wir diesen Ansatz wohl auf die Spitze getrieben haben. Da man keine Veränderungen zwischen den Währungen erkennt, ist immer offensichtlich, wo sich Arbeiten und Shoppen am meisten lohnt. Das macht unsere Webseite im Grunde redundant.
+
+
 ## 🚀 Technologien
 
 ### Frontend
@@ -26,7 +31,7 @@ Eine interaktive Webseite zum Vergleich von Wechselkursen zwischen Dänemark und
 - **cURL** - API-Requests
 
 ### Externe APIs
-- **Open Exchange Rates API** (`open.er-api.com`) - Aktuelle Wechselkurse
+- **Open Exchange Rates API** (`exchangerate-api.com) - Aktuelle Wechselkurse
 
 ## 📁 Projektstruktur
 
@@ -103,7 +108,7 @@ im3_marko_ville/
 
 1. **Repository klonen**
 ```bash
-git clone https://github.com/username/im3_marko_ville.git
+git clone https://github.com/vylle54/im3_marko_ville
 cd im3_marko_ville
 ```
 
@@ -162,13 +167,13 @@ Tabelle: im3
 ### Farbschema
 - **Hintergrund**: Himmel-Gradient (hell- bis dunkelblau)
 - **Buttons**: Helles Grün (`#c8f0d7`)
-- **Chart**: Hellgrüner Hintergrund mit weißer Legende
+- **Chart**: Hellgrüner Hintergrund mit weisser Legende
 - **DKK**: Rot (`#C8102E` - Farbe der dänischen Flagge)
 - **SEK**: Blau (`#005293` - Farbe der schwedischen Flagge)
 
 ### Animationen
 - **Schwebe-Effekt**: Buttons schweben sanft (6s Loop)
-- **Hover**: Buttons heben sich an und werden größer
+- **Hover**: Buttons heben sich an und werden grösser
 - **GIF**: Auto fährt über Brücke mit Cache-Buster für Neustart
 
 ### Accessibility
@@ -189,4 +194,4 @@ Tabelle: im3
 ---
 
 **Projekt erstellt für**: IM3 Kurs  
-**Datum**: Dezember 2025
+**Datum**: Januar 2026
